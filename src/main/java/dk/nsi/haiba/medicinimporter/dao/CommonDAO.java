@@ -29,20 +29,25 @@ package dk.nsi.haiba.medicinimporter.dao;
 import org.springframework.beans.factory.annotation.Value;
 
 public class CommonDAO {
-	
-	protected final String MYSQL = "MySQL";
-	protected final String MSSQL = "MSSQL";
-	
-	@Value("${jdbc.dialect}")
-	private String dialect;
+    protected final String MYSQL = "MySQL";
+    protected final String MSSQL = "MSSQL";
 
-	public String getDialect() {
-		return dialect;
-	}
+    @Value("${jdbc.dialect}")
+    private String dialect;
 
-	public void setDialect(String dialect) {
-		this.dialect = dialect;
-	}
-	
+    public String getDialect() {
+        return dialect;
+    }
 
+    public void setDialect(String dialect) {
+        this.dialect = dialect;
+    }
+
+    public boolean isMYSQL() {
+        return MYSQL.equals(getDialect());
+    }
+
+    public boolean isMSSQL() {
+        return MSSQL.equals(getDialect());
+    }
 }

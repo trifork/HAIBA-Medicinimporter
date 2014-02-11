@@ -26,17 +26,48 @@
  */
 package dk.nsi.haiba.medicinimporter.config;
 
-import dk.nsi.haiba.medicinimporter.importer.MedicinParser;
-import dk.nsi.haiba.medicinimporter.parser.Parser;
+import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jndi.JndiObjectFactoryBean;
 
 @Configuration
 public class MedicinConfiguration {
-    @Bean
-    public Parser parser() {
-		return new MedicinParser();
-	}
+    @Value("${jdbc.haibaJNDIName}")
+    private String haibaJNDIName;
 
+    @Value("${jdbc.medicinJNDIName}")
+    private String medicinJNDIName;
+    
+    @Bean
+    public DataSource haibaDataSource() throws Exception {
+        JndiObjectFactoryBean factory = new JndiObjectFactoryBean();
+        factory.setJndiName(haibaJNDIName);
+        factory.setExpectedType(DataSource.class);
+        factory.afterPropertiesSet();
+        return (DataSource) factory.getObject();
+    }
+
+    @Bean
+    public DataSource medicinDataSource() throws Exception {
+        JndiObjectFactoryBean factory = new JndiObjectFactoryBean();
+        factory.setJndiName(medicinJNDIName);
+        factory.setExpectedType(DataSource.class);
+        factory.afterPropertiesSet();
+        return (DataSource) factory.getObject();
+    }
+    
+    @Bean
+    public JdbcTemplate haibaJdbcTemplate(@Qualifier("haibaDataSource") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
+
+    @Bean
+    public JdbcTemplate medicinJdbcTemplate(@Qualifier("medicinDataSource") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
 }

@@ -26,100 +26,73 @@
  */
 package dk.nsi.haiba.medicinimporter.importer;
 
-import java.io.File;
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import dk.nsi.haiba.medicinimporter.dao.HAIBADAO;
+import dk.nsi.haiba.medicinimporter.dao.MedicinDAO;
 import dk.nsi.haiba.medicinimporter.log.Log;
-import dk.nsi.haiba.medicinimporter.parser.Inbox;
-import dk.nsi.haiba.medicinimporter.parser.Parser;
 import dk.nsi.haiba.medicinimporter.status.ImportStatusRepository;
 
 /*
  * Scheduled job, responsible for fetching new data from LPR, then send it to the RulesEngine for further processing
  */
 public class ImportExecutor {
-	
-	private static Log log = new Log(Logger.getLogger(ImportExecutor.class));
+    private static Log log = new Log(Logger.getLogger(ImportExecutor.class));
 
-	private boolean manualOverride;
-	
-	@Autowired
-	HAIBADAO haibaDao;
+    private boolean manualOverride;
 
-	@Autowired
-	ImportStatusRepository statusRepo;
-	
-	@Autowired
-	Inbox inbox;
+    @Autowired
+    HAIBADAO haibaDao;
 
-	@Autowired
-	Parser parser;
+    @Autowired
+    MedicinDAO medicinDAO;
 
-	@Scheduled(cron = "${cron.import.job}")
-	public void run() {
-		if(!isManualOverride()) {
-			log.debug("Running Importer: " + new Date().toString());
-			doProcess();
-		} else {
-			log.debug("Importer must be started manually");
-		}
-	}
+    @Autowired
+    ImportStatusRepository statusRepo;
+    
+    @Value("${batchSize:1000}")
+    long batchSize;
 
-	/*
-	 * Separated into its own method for testing purpose, because testing a scheduled method isn't good
-	 */
-	public void doProcess() {
-		// Fetch new records from LPR contact table
-		try {
-			statusRepo.importStartedAt(new DateTime());
+    @Scheduled(cron = "${cron.import.job}")
+    public void run() {
+        if (!isManualOverride()) {
+            log.debug("Running Importer: " + new Date().toString());
+            doProcess();
+        } else {
+            log.debug("Importer must be started manually");
+        }
+    }
 
-			if (!inbox.isLocked()) {
-				log.debug(inbox + " for parser is unlocked");
+    public void doProcess() {
+        try {
+            statusRepo.importStartedAt(new DateTime());
+            long latestSyncId = haibaDao.getLatestSyncId();
+            Collection<Medicin> medicinFromSyncId = medicinDAO.getMedicinFromSyncId(latestSyncId, batchSize);
+            while (!medicinFromSyncId.isEmpty()) {
+                log.debug("doProcess: copying " + medicinFromSyncId.size() + " rows from syncId " + latestSyncId);
+                haibaDao.saveMedicinList(medicinFromSyncId);
+                latestSyncId = haibaDao.getLatestSyncId();
+                medicinFromSyncId = medicinDAO.getMedicinFromSyncId(latestSyncId, batchSize);
+            }
+            statusRepo.importEndedWithSuccess(new DateTime());
+        } catch (Exception e) {
+            statusRepo.importEndedWithFailure(new DateTime(), e.getMessage());
+            throw new RuntimeException("runParserOnInbox  failed", e); // to make sure the transaction rolls back
+        }
+    }
 
-				inbox.update();
-				File dataSet = inbox.top();
+    public boolean isManualOverride() {
+        return manualOverride;
+    }
 
-				if (dataSet != null) {
-
-					parser.process(dataSet, "TODO");
-
-					// Once the import is complete
-					// we can remove the data set
-					// from the inbox.
-					inbox.advance();
-
-					statusRepo.importEndedWithSuccess(new DateTime());
-				} // if there is no data and no error, we never call store on the log item, which is okay
-			} else {
-				log.debug(inbox + " for parser is locked");
-			}
-	        
-			statusRepo.importEndedWithSuccess(new DateTime());
-			
-		} catch(Exception e) {
-			log.error("", e);
-			try {
-				inbox.lock();
-			} catch (RuntimeException lockExc) {
-				log.error("Unable to lock " + inbox, lockExc);
-			}
-			statusRepo.importEndedWithFailure(new DateTime(), e.getMessage());
-			throw new RuntimeException("runParserOnInbox  failed", e); // to make sure the transaction rolls back
-		}
-	}
-
-	public boolean isManualOverride() {
-		return manualOverride;
-	}
-
-	public void setManualOverride(boolean manualOverride) {
-		this.manualOverride = manualOverride;
-	}
-	
+    public void setManualOverride(boolean manualOverride) {
+        this.manualOverride = manualOverride;
+    }
 }

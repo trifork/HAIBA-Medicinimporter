@@ -26,14 +26,14 @@
  */
 package dk.nsi.haiba.medicinimporter.dao;
 
-import java.util.List;
+import java.util.Collection;
 
 import dk.nsi.haiba.medicinimporter.exception.DAOException;
-import dk.nsi.haiba.medicinimporter.importer.MedicinDummy;
-
+import dk.nsi.haiba.medicinimporter.importer.Medicin;
 
 public interface HAIBADAO {
-	
-	void saveMedicinDummyList(List<MedicinDummy> institution) throws DAOException;
+    public long getLatestSyncId();
+
+    void saveMedicinList(Collection<Medicin> medicinFromSyncId) throws DAOException;
 
 }

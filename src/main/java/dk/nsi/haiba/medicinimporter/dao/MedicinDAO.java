@@ -24,19 +24,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dk.nsi.haiba.medicinimporter.importer;
+package dk.nsi.haiba.medicinimporter.dao;
 
-public class MedicinDummy {
-	
-	private String dummy;
+import java.util.Collection;
 
-	public String getDummy() {
-		return dummy;
-	}
+import dk.nsi.haiba.medicinimporter.importer.Medicin;
 
-	public void setDummy(String dummy) {
-		this.dummy = dummy;
-	}
-	
-
+public interface MedicinDAO {
+    public Collection<Medicin> getMedicinFromSyncId(long syncId, long batchSize);
 }
