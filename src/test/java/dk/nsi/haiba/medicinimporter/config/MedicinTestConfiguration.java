@@ -47,4 +47,9 @@ public class MedicinTestConfiguration extends MedicinConfiguration {
         return mock(DataSource.class);
     }
 
+    @Bean
+    public DataSource medicinDataSource() {
+        return mock(DataSource.class);
+    }
+
 }
