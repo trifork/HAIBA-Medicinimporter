@@ -41,7 +41,7 @@ public class HAIBADAOImpl extends CommonDAO implements HAIBADAO {
     @Autowired
     JdbcTemplate haibaJdbcTemplate;
 
-    @Value("${jdbc:haibaTablePrefix:}")
+    @Value("${jdbc:haibatableprefix:}")
     String haibaTablePrefix;
 
     @Override

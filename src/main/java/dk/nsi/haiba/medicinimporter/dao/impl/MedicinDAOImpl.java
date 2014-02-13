@@ -44,7 +44,7 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
     @Autowired
     JdbcTemplate medicinJdbcTemplate;
 
-    @Value("${jdbc:medicinTablePrefix:BASE}")
+    @Value("${jdbc:medicintableprefix:BASE}")
     String medicinTablePrefix;
 
     @Override
