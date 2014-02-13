@@ -32,6 +32,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
@@ -42,6 +45,20 @@ public class MedicinConfiguration {
 
     @Value("${jdbc.medicinJNDIName}")
     private String medicinJNDIName;
+    
+    // this is not automatically registered, see https://jira.springsource.org/browse/SPR-8539
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+        propertySourcesPlaceholderConfigurer.setIgnoreResourceNotFound(true);
+        propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(false);
+
+        propertySourcesPlaceholderConfigurer
+                .setLocations(new Resource[] { new ClassPathResource("default-config.properties"),
+                        new ClassPathResource("medicinconfig.properties") });
+
+        return propertySourcesPlaceholderConfigurer;
+    }
     
     @Bean
     public DataSource haibaDataSource() throws Exception {
