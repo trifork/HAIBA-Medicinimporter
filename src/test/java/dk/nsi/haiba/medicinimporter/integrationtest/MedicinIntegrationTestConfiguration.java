@@ -24,7 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dk.nsi.haiba.medicinimporter.config;
+package dk.nsi.haiba.medicinimporter.integrationtest;
 
 import javax.sql.DataSource;
 
@@ -32,18 +32,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import dk.nsi.haiba.medicinimporter.dao.HAIBADAO;
-import dk.nsi.haiba.medicinimporter.dao.MedicinDAO;
-import dk.nsi.haiba.medicinimporter.dao.impl.HAIBADAOImpl;
-import dk.nsi.haiba.medicinimporter.dao.impl.MedicinDAOImpl;
+import com.mysql.jdbc.Driver;
+
+import dk.nsi.haiba.medicinimporter.config.MedicinConfiguration;
 import dk.nsi.haiba.medicinimporter.importer.ImportExecutor;
 import dk.nsi.haiba.medicinimporter.status.ImportStatusRepository;
 import dk.nsi.haiba.medicinimporter.status.ImportStatusRepositoryJdbcImpl;
@@ -51,87 +48,57 @@ import dk.nsi.haiba.medicinimporter.status.TimeSource;
 import dk.nsi.haiba.medicinimporter.status.TimeSourceRealTimeImpl;
 
 @Configuration
-public class MedicinConfiguration {
+@EnableTransactionManagement
+@PropertySource("test.properties")
+public class MedicinIntegrationTestConfiguration extends MedicinConfiguration {
     @Value("${jdbc.haibaJNDIName}")
     private String haibaJNDIName;
 
     @Value("${jdbc.medicinJNDIName}")
     private String medicinJNDIName;
 
-    // this is not automatically registered, see https://jira.springsource.org/browse/SPR-8539
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-        propertySourcesPlaceholderConfigurer.setIgnoreResourceNotFound(true);
-        propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(false);
-
-        propertySourcesPlaceholderConfigurer
-                .setLocations(new Resource[] { new ClassPathResource("default-config.properties"),
-                        new ClassPathResource("medicinconfig.properties") });
-
-        return propertySourcesPlaceholderConfigurer;
-    }
+    @Value("${test.mysql.port}")
+    private int mysqlPort;
+    @Value("${test.mysql.haibadbname}")
+    private String testHAIBADbName;
+    @Value("${test.mysql.haibadbusername}")
+    private String testHAIBADbUsername;
+    @Value("${test.mysql.haibadbpassword}")
+    private String testHAIBADbPassword;
 
     @Bean
     public DataSource haibaDataSource() throws Exception {
-        JndiObjectFactoryBean factory = new JndiObjectFactoryBean();
-        factory.setJndiName(haibaJNDIName);
-        factory.setExpectedType(DataSource.class);
-        factory.afterPropertiesSet();
-        return (DataSource) factory.getObject();
+        String jdbcUrlPrefix = "jdbc:mysql://127.0.0.1:" + mysqlPort + "/";
+
+        return new SimpleDriverDataSource(new Driver(), jdbcUrlPrefix + testHAIBADbName
+                + "?createDatabaseIfNotExist=true", testHAIBADbUsername, testHAIBADbPassword);
     }
 
     @Bean
     public DataSource medicinDataSource() throws Exception {
-        JndiObjectFactoryBean factory = new JndiObjectFactoryBean();
-        factory.setJndiName(medicinJNDIName);
-        factory.setExpectedType(DataSource.class);
-        factory.afterPropertiesSet();
-        return (DataSource) factory.getObject();
-    }
+        String jdbcUrlPrefix = "jdbc:mysql://127.0.0.1:" + mysqlPort + "/";
 
-    @Bean
-    public JdbcTemplate haibaJdbcTemplate(@Qualifier("haibaDataSource") DataSource ds) {
-        return new JdbcTemplate(ds);
+        return new SimpleDriverDataSource(new Driver(), jdbcUrlPrefix + testHAIBADbName
+                + "?createDatabaseIfNotExist=true", testHAIBADbUsername, testHAIBADbPassword);
     }
-
-    @Bean
-    public JdbcTemplate medicinJdbcTemplate(@Qualifier("medicinDataSource") DataSource ds) {
-        return new JdbcTemplate(ds);
-    }
-
+    
     @Bean
     public ImportExecutor importExecutor() {
         return new ImportExecutor();
     }
-
+    
     @Bean
     public ImportStatusRepository importStatusRepository() {
         return new ImportStatusRepositoryJdbcImpl();
     }
-
+    
     @Bean
     public TimeSource timeSource() {
         return new TimeSourceRealTimeImpl();
     }
-
+    
     @Bean
     public PlatformTransactionManager medicinTransactionManager(@Qualifier("medicinDataSource") DataSource ds) {
         return new DataSourceTransactionManager(ds);
-    }
-    
-    @Bean
-    public PlatformTransactionManager haibaTransactionManager(@Qualifier("haibaDataSource") DataSource ds) {
-        return new DataSourceTransactionManager(ds);
-    }
-
-    @Bean
-    public HAIBADAO haibaDAO() {
-        return new HAIBADAOImpl();
-    }
-
-    @Bean
-    public MedicinDAO medicinDAO() {
-        return new MedicinDAOImpl();
     }
 }

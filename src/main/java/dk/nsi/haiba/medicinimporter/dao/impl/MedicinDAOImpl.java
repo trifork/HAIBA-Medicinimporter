@@ -52,13 +52,13 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
         Collection<Medicin> returnValue = new ArrayList<Medicin>();
         String sql = null;
         if (isMYSQL()) {
-            sql = "SELECT * FROM T_HAI_MEDICIN where InsertRow_id>? LIMIT " + batchSize + " ORDER BY InsertRow_id";
+            sql = "SELECT * FROM T_HAI_MEDICIN where InsertRow_id>? ORDER BY InsertRow_id LIMIT " + batchSize;
         } else {
             // MSSQL
             sql = "SELECT TOP " + batchSize + " * FROM " + medicinTablePrefix
                     + "T_HAI_MEDICIN where InsertRow_id>? ORDER BY InsertRow_id";
         }
-        medicinJdbcTemplate.query(sql, new RowMapper<Medicin>() {
+        returnValue = medicinJdbcTemplate.query(sql, new RowMapper<Medicin>() {
             @Override
             public Medicin mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Medicin returnValue = new Medicin();
