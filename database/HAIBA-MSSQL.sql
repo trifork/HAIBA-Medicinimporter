@@ -19,3 +19,12 @@ CREATE TABLE region_medicin(
         [V_BEH_INDIC] [nvarchar](150) NULL,
         [InsertRow_id] [bigint] IDENTITY(1,1) NOT NULL
 )
+
+CREATE TABLE MedicinImporterStatus (
+    Id BIGINT NOT NULL IDENTITY PRIMARY KEY,
+    Type VARCHAR(20),
+    StartTime DATETIME NOT NULL,
+    EndTime DATETIME,
+    Outcome VARCHAR(20),
+    ErrorMessage VARCHAR(200)
+)
