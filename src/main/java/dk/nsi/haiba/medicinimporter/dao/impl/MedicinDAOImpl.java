@@ -50,13 +50,14 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
     public MedicinDAOImpl(String dialect) {
         super(dialect);
     }
-    
+
     @Override
     public Collection<Medicin> getMedicinFromSyncId(long syncId, long batchSize) {
         Collection<Medicin> returnValue = new ArrayList<Medicin>();
         String sql = null;
         if (isMYSQL()) {
-            sql = "SELECT * FROM T_HAI_MEDICIN where InsertRow_id>? ORDER BY InsertRow_id LIMIT " + batchSize;
+            sql = "SELECT * FROM " + medicinTablePrefix
+                    + "T_HAI_MEDICIN where InsertRow_id>? ORDER BY InsertRow_id LIMIT " + batchSize;
         } else {
             // MSSQL
             sql = "SELECT TOP " + batchSize + " * FROM " + medicinTablePrefix
