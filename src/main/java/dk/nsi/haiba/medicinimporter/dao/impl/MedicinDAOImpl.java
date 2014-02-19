@@ -44,9 +44,13 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
     @Autowired
     JdbcTemplate medicinJdbcTemplate;
 
-    @Value("${jdbc.medicintableprefix:BASE}")
+    @Value("${jdbc.medicintableprefix:BASE.}")
     String medicinTablePrefix;
 
+    public MedicinDAOImpl(String dialect) {
+        super(dialect);
+    }
+    
     @Override
     public Collection<Medicin> getMedicinFromSyncId(long syncId, long batchSize) {
         Collection<Medicin> returnValue = new ArrayList<Medicin>();

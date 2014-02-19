@@ -57,6 +57,12 @@ public class MedicinConfiguration {
 
     @Value("${jdbc.medicinJNDIName}")
     private String medicinJNDIName;
+    
+    @Value("${jdbc.haiba.dialect:MSSQL}")
+    String haibadialect;
+
+    @Value("${jdbc.medicin.dialect:MYSQL}")
+    String medicindialect;
 
     // this is not automatically registered, see https://jira.springsource.org/browse/SPR-8539
     @Bean
@@ -107,7 +113,7 @@ public class MedicinConfiguration {
 
     @Bean
     public ImportStatusRepository importStatusRepository() {
-        return new ImportStatusRepositoryJdbcImpl();
+        return new ImportStatusRepositoryJdbcImpl(haibadialect);
     }
 
     @Bean
@@ -127,11 +133,11 @@ public class MedicinConfiguration {
 
     @Bean
     public HAIBADAO haibaDAO() {
-        return new HAIBADAOImpl();
+        return new HAIBADAOImpl(haibadialect);
     }
 
     @Bean
     public MedicinDAO medicinDAO() {
-        return new MedicinDAOImpl();
+        return new MedicinDAOImpl(medicindialect);
     }
 }

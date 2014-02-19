@@ -57,6 +57,10 @@ public class ImportStatusRepositoryJdbcImpl extends CommonDAO implements ImportS
     @Value("${jdbc.haibatableprefix:}")
     String tableprefix;
 
+    public ImportStatusRepositoryJdbcImpl(String dialect) {
+        super(dialect);
+    }
+    
     @Override
     @Transactional(value = "haibaTransactionManager")
     public void importStartedAt(DateTime startTime) {

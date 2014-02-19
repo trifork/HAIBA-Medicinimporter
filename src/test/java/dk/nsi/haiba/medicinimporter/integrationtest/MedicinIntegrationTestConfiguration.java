@@ -65,7 +65,8 @@ public class MedicinIntegrationTestConfiguration extends MedicinConfiguration {
     private String testHAIBADbUsername;
     @Value("${test.mysql.haibadbpassword}")
     private String testHAIBADbPassword;
-
+    @Value("${jdbc.haiba.dialect:MSSQL}")
+    String haibadialect;
     @Bean
     public DataSource haibaDataSource() throws Exception {
         String jdbcUrlPrefix = "jdbc:mysql://127.0.0.1:" + mysqlPort + "/";
@@ -89,7 +90,7 @@ public class MedicinIntegrationTestConfiguration extends MedicinConfiguration {
     
     @Bean
     public ImportStatusRepository importStatusRepository() {
-        return new ImportStatusRepositoryJdbcImpl();
+        return new ImportStatusRepositoryJdbcImpl(haibadialect);
     }
     
     @Bean

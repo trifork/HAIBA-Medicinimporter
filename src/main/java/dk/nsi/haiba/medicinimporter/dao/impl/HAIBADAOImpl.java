@@ -44,6 +44,10 @@ public class HAIBADAOImpl extends CommonDAO implements HAIBADAO {
     @Value("${jdbc.haibatableprefix:}")
     String haibaTablePrefix;
 
+    public HAIBADAOImpl(String dialect) {
+        super(dialect);
+    }
+    
     @Override
     public long getLatestSyncId() {
         return haibaJdbcTemplate.queryForLong("SELECT max(insertrow_id) FROM " + haibaTablePrefix + "region_medicin");
