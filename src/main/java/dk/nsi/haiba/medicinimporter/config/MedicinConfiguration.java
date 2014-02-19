@@ -61,7 +61,7 @@ public class MedicinConfiguration {
     @Value("${jdbc.haiba.dialect:MSSQL}")
     String haibadialect;
 
-    @Value("${jdbc.medicin.dialect:MySQL}")
+    @Value("${jdbc.medicin.dialect:MSSQL}")
     String medicindialect;
 
     // this is not automatically registered, see https://jira.springsource.org/browse/SPR-8539
