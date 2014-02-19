@@ -17,7 +17,7 @@ CREATE TABLE region_medicin(
         [V_LAEGEMIDDELNAVN] [varchar](50) NULL,
         [V_BEH_INDIC_KODE] [varchar](20) NULL,
         [V_BEH_INDIC] [nvarchar](150) NULL,
-        [InsertRow_id] [bigint] IDENTITY(1,1) NOT NULL
+        [InsertRow_id] [bigint] NOT NULL
 )
 
 CREATE TABLE MedicinImporterStatus (
