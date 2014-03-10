@@ -38,6 +38,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import dk.nsi.haiba.medicinimporter.dao.HAIBADAO;
@@ -51,6 +52,7 @@ import dk.nsi.haiba.medicinimporter.status.TimeSource;
 import dk.nsi.haiba.medicinimporter.status.TimeSourceRealTimeImpl;
 
 @Configuration
+@EnableScheduling
 public class MedicinConfiguration {
     @Value("${jdbc.haibaJNDIName}")
     private String haibaJNDIName;
