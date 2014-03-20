@@ -68,11 +68,11 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
             public Medicin mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Medicin returnValue = new Medicin();
                 returnValue.setC_source_file(rs.getLong("c_source_file"));
-                returnValue.setD_adm_start(rs.getDate("D_ADM_START"));
-                returnValue.setD_kontakt_slut(rs.getDate("D_KONTAKT_SLUT"));
-                returnValue.setD_kontakt_start(rs.getDate("D_KONTAKT_START"));
-                returnValue.setD_ord_slut(rs.getDate("D_ORD_SLUT"));
-                returnValue.setD_ord_start(rs.getDate("D_ORD_START"));
+                returnValue.setD_adm_start(rs.getTimestamp("D_ADM_START"));
+                returnValue.setD_kontakt_slut(rs.getTimestamp("D_KONTAKT_SLUT"));
+                returnValue.setD_kontakt_start(rs.getTimestamp("D_KONTAKT_START"));
+                returnValue.setD_ord_slut(rs.getTimestamp("D_ORD_SLUT"));
+                returnValue.setD_ord_start(rs.getTimestamp("D_ORD_START"));
                 returnValue.setInsertrow_id(rs.getLong("InsertRow_id"));
                 returnValue.setV_ad_volumen_enhed(rs.getString("V_AD_VOLUMEN_ENHED"));
                 returnValue.setV_adm_dosis(rs.getString("V_ADM_DOSIS"));
