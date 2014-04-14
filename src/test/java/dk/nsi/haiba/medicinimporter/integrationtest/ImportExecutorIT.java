@@ -28,7 +28,6 @@ package dk.nsi.haiba.medicinimporter.integrationtest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Date;
@@ -40,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
@@ -52,8 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import dk.nsi.haiba.medicinimporter.dao.HAIBADAO;
 import dk.nsi.haiba.medicinimporter.dao.MedicinDAO;
-import dk.nsi.haiba.medicinimporter.dao.impl.HAIBADAOImpl;
-import dk.nsi.haiba.medicinimporter.dao.impl.MedicinDAOImpl;
 import dk.nsi.haiba.medicinimporter.importer.ImportExecutor;
 import dk.nsi.haiba.medicinimporter.importer.Medicin;
 
@@ -91,6 +87,7 @@ public class ImportExecutorIT {
     @Before
     public void init() {
         Logger.getLogger(ImportExecutor.class).setLevel(Level.DEBUG);
+//        Logger.getLogger("org.springframework.jdbc.core").setLevel(Level.TRACE);
 
         // remove all
         haibaJdbcTemplate.update("delete from region_medicin");
@@ -102,7 +99,7 @@ public class ImportExecutorIT {
         medicinJdbcTemplate
                 .update("INSERT INTO T_HAI_MEDICIN (V_REGION, V_CPR, V_SHAK, D_ADM_START, D_ORD_START, D_ORD_SLUT, D_KONTAKT_START, D_KONTAKT_SLUT, V_ADM_VEJ, V_ADM_DOSIS, V_ADM_DOSIS_ENHED, V_ADM_VOLUMEN, V_AD_VOLUMEN_ENHED, V_DRUGID, V_PRIM_ATC, V_LAEGEMIDDELNAVN, V_BEH_INDIC_KODE, V_BEH_INDIC, c_source_file) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         "REGI", "1234567890", "SHAKSHAKSH", d, d, d, d, d, "VEJ", "DOSIS", "DOSIS_ENHED", "VOLUMEN",
-                        "VOLUMEN_ENHED", id, "PRIM_ATC", "LAEGEMIDDELNAVN", "INDIC_KODE", "INDIC", id);
+                        "VOLUMEN_ENHED", "DRUG_ID", "PRIM_ATC", "LAEGEMIDDELNAVN", "INDIC_KODE", "INDIC", id);
     }
 
     @Test

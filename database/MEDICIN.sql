@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS T_HAI_MEDICIN (
         V_ADM_DOSIS_ENHED varchar(50) NULL,
         V_ADM_VOLUMEN varchar(50) NULL,
         V_AD_VOLUMEN_ENHED varchar(50) NULL,
-        V_DRUGID bigint NULL,
+        V_DRUGID varchar(15) NULL,
         V_PRIM_ATC varchar(20) NULL,
         V_LAEGEMIDDELNAVN varchar(50) NULL,
         V_BEH_INDIC_KODE varchar(20) NULL,

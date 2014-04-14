@@ -42,7 +42,7 @@ public class Medicin {
     private String v_adm_dosis_enhed;
     private String v_adm_volumen;
     private String v_ad_volumen_enhed;
-    private long v_drugid;
+    private String v_drugid;
     private String v_prim_atc;
     private String v_laegemiddelnavn;
     private String v_beh_indic_kode;
@@ -127,10 +127,10 @@ public class Medicin {
     public void setV_ad_volumen_enhed(String v_ad_volumen_enhed) {
         this.v_ad_volumen_enhed = v_ad_volumen_enhed;
     }
-    public long getV_drugid() {
+    public String getV_drugid() {
         return v_drugid;
     }
-    public void setV_drugid(long v_drugid) {
+    public void setV_drugid(String v_drugid) {
         this.v_drugid = v_drugid;
     }
     public String getV_prim_atc() {
