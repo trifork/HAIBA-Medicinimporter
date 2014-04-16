@@ -82,7 +82,10 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
                 returnValue.setV_beh_indic(rs.getString("V_BEH_INDIC"));
                 returnValue.setV_beh_indic_kode(rs.getString("V_BEH_INDIC_KODE"));
                 returnValue.setV_cpr(rs.getString("V_CPR"));
-                returnValue.setV_drugid(rs.getObject("V_DRUGID", String.class));
+                // returnValue.setV_drugid(rs.getObject("V_DRUGID", String.class)); // doesn't work on tomcat, old
+                // version
+                returnValue.setV_drugid(convertToString(rs.getObject("V_DRUGID"))); // doesn't work on tomcat, old
+                                                                                    // version
                 returnValue.setV_laegemiddelnavn(rs.getString("V_LAEGEMIDDELNAVN"));
                 returnValue.setV_prim_atc(rs.getString("V_PRIM_ATC"));
                 returnValue.setV_region(rs.getString("V_REGION"));
@@ -90,6 +93,11 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
                 return returnValue;
             }
         }, syncId);
+        return returnValue;
+    }
+
+    protected String convertToString(Object object) {
+        String returnValue = "" + object;
         return returnValue;
     }
 }

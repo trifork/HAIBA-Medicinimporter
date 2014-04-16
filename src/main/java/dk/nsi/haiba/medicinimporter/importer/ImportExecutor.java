@@ -82,7 +82,7 @@ public class ImportExecutor {
                 medicinFromSyncId = medicinDAO.getMedicinFromSyncId(latestSyncId, batchSize);
             }
             statusRepo.importEndedWithSuccess(new DateTime());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             statusRepo.importEndedWithFailure(new DateTime(), e.getMessage());
             throw new RuntimeException("runParserOnInbox  failed", e); // to make sure the transaction rolls back
         }
