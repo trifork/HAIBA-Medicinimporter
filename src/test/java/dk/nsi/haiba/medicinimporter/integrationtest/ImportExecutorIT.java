@@ -95,11 +95,12 @@ public class ImportExecutorIT {
     }
 
     private void insertRandomMedicinRow(int id) {
+        // v_drugid is int or string (was int, kenn wants it to be string)
         Date d = new Date();
         medicinJdbcTemplate
                 .update("INSERT INTO T_HAI_MEDICIN (V_REGION, V_CPR, V_SHAK, D_ADM_START, D_ORD_START, D_ORD_SLUT, D_KONTAKT_START, D_KONTAKT_SLUT, V_ADM_VEJ, V_ADM_DOSIS, V_ADM_DOSIS_ENHED, V_ADM_VOLUMEN, V_AD_VOLUMEN_ENHED, V_DRUGID, V_PRIM_ATC, V_LAEGEMIDDELNAVN, V_BEH_INDIC_KODE, V_BEH_INDIC, c_source_file) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         "REGI", "1234567890", "SHAKSHAKSH", d, d, d, d, d, "VEJ", "DOSIS", "DOSIS_ENHED", "VOLUMEN",
-                        "VOLUMEN_ENHED", "DRUG_ID", "PRIM_ATC", "LAEGEMIDDELNAVN", "INDIC_KODE", "INDIC", id);
+                        "VOLUMEN_ENHED", id, "PRIM_ATC", "LAEGEMIDDELNAVN", "INDIC_KODE", "INDIC", id);
     }
 
     @Test
