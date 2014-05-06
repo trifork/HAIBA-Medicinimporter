@@ -50,14 +50,14 @@ public class HAIBADAOImpl extends CommonDAO implements HAIBADAO {
     
     @Override
     public long getLatestSyncId() {
-        return haibaJdbcTemplate.queryForLong("SELECT max(insertrow_id) FROM " + haibaTablePrefix + "region_medicin");
+        return haibaJdbcTemplate.queryForLong("SELECT max(insertrow_id) FROM " + haibaTablePrefix + "Data_medicine");
     }
 
     @Override
     public void saveMedicinList(Collection<Medicin> medicinFromSyncId) throws DAOException {
         // @formatter:off
         String sql = ""
-                + "INSERT INTO " + haibaTablePrefix + "region_medicin "
+                + "INSERT INTO " + haibaTablePrefix + "Data_medicine "
                 + "            (v_cpr, "
                 + "             v_shak, "
                 + "             v_region, "

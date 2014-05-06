@@ -171,10 +171,10 @@ public class ImportStatusRepositoryJdbcImpl extends CommonDAO implements ImportS
     public boolean isHAIBADBAlive() {
         String sql = null;
         if (MYSQL.equals(getDialect())) {
-            sql = "SELECT insertrow_id from region_medicin LIMIT 1";
+            sql = "SELECT insertrow_id from Data_medicine LIMIT 1";
         } else {
             // MSSQL
-            sql = "SELECT Top 1 insertrow_id from " + tableprefix + "region_medicin";
+            sql = "SELECT Top 1 insertrow_id from " + tableprefix + "Data_medicine";
         }
 
         try {

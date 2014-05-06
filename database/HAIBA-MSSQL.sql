@@ -1,4 +1,4 @@
-CREATE TABLE region_medicin(
+CREATE TABLE Data_medicine(
         [V_REGION] [varchar](4) NULL,
         [V_CPR] [varchar](10) NULL,
         [V_SHAK] [varchar](10) NULL,

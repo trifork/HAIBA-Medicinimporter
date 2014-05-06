@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS region_medicin (
+CREATE TABLE IF NOT EXISTS Data_medicine (
         V_REGION varchar(4) NULL,
         V_CPR varchar(10) NULL,
         V_SHAK varchar(10) NULL,

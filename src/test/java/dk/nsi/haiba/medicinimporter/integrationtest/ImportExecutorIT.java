@@ -90,7 +90,7 @@ public class ImportExecutorIT {
 //        Logger.getLogger("org.springframework.jdbc.core").setLevel(Level.TRACE);
 
         // remove all
-        haibaJdbcTemplate.update("delete from region_medicin");
+        haibaJdbcTemplate.update("delete from Data_medicine");
         medicinJdbcTemplate.update("delete from T_HAI_MEDICIN");
     }
 
