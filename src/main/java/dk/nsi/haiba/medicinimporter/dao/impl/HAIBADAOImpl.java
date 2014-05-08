@@ -70,7 +70,7 @@ public class HAIBADAOImpl extends CommonDAO implements HAIBADAO {
                 + "             v_adm_dosis, "
                 + "             v_adm_dosis_enhed, "
                 + "             v_adm_volumen, "
-                + "             v_ad_volumen_enhed, "
+                + "             v_adm_volumen_enhed, "
                 + "             v_drugid, "
                 + "             v_prim_atc, "
                 + "             v_laegemiddelnavn, "

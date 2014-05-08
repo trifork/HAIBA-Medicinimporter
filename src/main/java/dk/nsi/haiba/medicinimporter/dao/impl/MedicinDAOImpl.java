@@ -74,7 +74,7 @@ public class MedicinDAOImpl extends CommonDAO implements MedicinDAO {
                 returnValue.setD_ord_slut(rs.getTimestamp("D_ORD_SLUT"));
                 returnValue.setD_ord_start(rs.getTimestamp("D_ORD_START"));
                 returnValue.setInsertrow_id(rs.getLong("InsertRow_id"));
-                returnValue.setV_ad_volumen_enhed(rs.getString("V_AD_VOLUMEN_ENHED"));
+                returnValue.setV_ad_volumen_enhed(rs.getString("V_ADM_VOLUMEN_ENHED"));
                 returnValue.setV_adm_dosis(rs.getString("V_ADM_DOSIS"));
                 returnValue.setV_adm_dosis_enhed(rs.getString("V_ADM_DOSIS_ENHED"));
                 returnValue.setV_adm_vej(rs.getString("V_ADM_VEJ"));
