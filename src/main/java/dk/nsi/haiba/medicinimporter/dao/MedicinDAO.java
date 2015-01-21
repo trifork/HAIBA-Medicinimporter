@@ -32,4 +32,5 @@ import dk.nsi.haiba.medicinimporter.importer.Medicin;
 
 public interface MedicinDAO {
     public Collection<Medicin> getMedicinFromSyncId(long syncId, long batchSize);
+    public int getRegion();
 }

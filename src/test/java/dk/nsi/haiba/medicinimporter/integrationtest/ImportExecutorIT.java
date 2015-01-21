@@ -70,6 +70,10 @@ public class ImportExecutorIT {
     @Autowired
     @Qualifier("medicinJdbcTemplate")
     JdbcTemplate medicinJdbcTemplate;
+    
+    @Autowired
+    @Qualifier("regionHMedicinJdbcTemplate")
+    JdbcTemplate regionHMedicinJdbcTemplate;
 
     @Autowired
     @Qualifier("haibaJdbcTemplate")
@@ -87,11 +91,12 @@ public class ImportExecutorIT {
     @Before
     public void init() {
         Logger.getLogger(ImportExecutor.class).setLevel(Level.DEBUG);
-//        Logger.getLogger("org.springframework.jdbc.core").setLevel(Level.TRACE);
+        // Logger.getLogger("org.springframework.jdbc.core").setLevel(Level.TRACE);
 
         // remove all
         haibaJdbcTemplate.update("delete from Data_medicine");
         medicinJdbcTemplate.update("delete from T_HAI_MEDICIN");
+        regionHMedicinJdbcTemplate.update("delete from T_MEDICIN_1084");
     }
 
     private void insertRandomMedicinRow(int id) {
@@ -99,8 +104,17 @@ public class ImportExecutorIT {
         Date d = new Date();
         medicinJdbcTemplate
                 .update("INSERT INTO T_HAI_MEDICIN (V_REGION, V_CPR, V_SHAK, D_ADM_START, D_ORD_START, D_ORD_SLUT, D_KONTAKT_START, D_KONTAKT_SLUT, V_ADM_VEJ, V_ADM_DOSIS, V_ADM_DOSIS_ENHED, V_ADM_VOLUMEN, V_ADM_VOLUMEN_ENHED, V_DRUGID, V_PRIM_ATC, V_LAEGEMIDDELNAVN, V_BEH_INDIC_KODE, V_BEH_INDIC, c_source_file) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        "REGI", "1234567890", "SHAKSHAKSH", d, d, d, d, d, "VEJ", "DOSIS", "DOSIS_ENHED", "VOLUMEN",
+                        1085, "1234567890", "SHAKSHAKSH", d, d, d, d, d, "VEJ", "DOSIS", "DOSIS_ENHED", "VOLUMEN",
                         "VOLUMEN_ENHED", id, "PRIM_ATC", "LAEGEMIDDELNAVN", "INDIC_KODE", "INDIC", id);
+    }
+
+    private void insertRandomRegionHMedicinRow(int id) {
+        // v_drugid is int or string (was int, kenn wants it to be string)
+        Date d = new Date();
+        regionHMedicinJdbcTemplate
+                .update("INSERT INTO T_MEDICIN_1084 (V_REGION, V_CPR, V_BEH_OE, D_ADM_START, D_MED_START, D_MED_END, D_K_START, D_K_SLUT, V_ADMVEJ, V_ADM_DOSIS, V_ADM_DOSIS_ENHED, V_ADM_VOLUMEN, V_ADM_VOLUMEN_ENHED, V_DRUGID, V_PRIM_ATC, V_NAVN, V_INDIC, c_source_file) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        1084, "1234567890", "SHAKSHAKSH", d, d, d, d, d, "VEJ", "DOSIS", "DOSIS_ENHED", "VOLUMEN",
+                        "VOLUMEN_ENHED", id, "PRIM_ATC", "LAEGEMIDDELNAVN", "INDIC", id);
     }
 
     @Test
@@ -121,25 +135,17 @@ public class ImportExecutorIT {
         int count = 189;
         for (int i = 0; i < count; i++) {
             insertRandomMedicinRow(i);
+            insertRandomRegionHMedicinRow(i);
         }
+        long latestFromMedicin1085 = medicinJdbcTemplate.queryForLong("SELECT LAST_INSERT_ID()");
+        long latestFromMedicin1084 = regionHMedicinJdbcTemplate.queryForLong("SELECT LAST_INSERT_ID()");
 
         importExecutor.doProcess();
-        long latestSyncId = haibaDAO.getLatestSyncId();
-        long latestFromMedicin = medicinJdbcTemplate.queryForLong("SELECT LAST_INSERT_ID()");
-        assertEquals(latestFromMedicin, latestSyncId);
-    }
-
-    @Test
-    public void testAnotherImportExecutor() {
-        // insert 189 rows and test that they are all copied
-        int count = 189;
-        for (int i = 0; i < count; i++) {
-            insertRandomMedicinRow(i);
-        }
-
-        importExecutor.doProcess();
-        long latestSyncId = haibaDAO.getLatestSyncId();
-        long latestFromMedicin = medicinJdbcTemplate.queryForLong("SELECT LAST_INSERT_ID()");
-        assertEquals(latestFromMedicin, latestSyncId);
+        long latestSyncId1085 = haibaDAO.getLatestSyncId(1085);
+        long latestSyncId1084 = haibaDAO.getLatestSyncId(1084);
+        System.out.println("1085:" + latestSyncId1085 + ", 1084:" + latestSyncId1084 + ", latestFromMedicin1085:"
+                + latestFromMedicin1085);
+        assertEquals(latestFromMedicin1084, latestSyncId1084);
+        assertEquals(latestFromMedicin1085, latestSyncId1085);
     }
 }

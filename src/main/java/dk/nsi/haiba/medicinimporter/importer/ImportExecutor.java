@@ -55,8 +55,11 @@ public class ImportExecutor {
     MedicinDAO medicinDAO;
 
     @Autowired
+    MedicinDAO regionHMedicinDAO;
+
+    @Autowired
     ImportStatusRepository statusRepo;
-    
+
     @Value("${batchSize:1000}")
     long batchSize;
 
@@ -71,21 +74,29 @@ public class ImportExecutor {
     }
 
     public void doProcess() {
+        doProcess(medicinDAO);
+        doProcess(regionHMedicinDAO);
+    }
+
+    public void doProcess(MedicinDAO dao) {
+        log.info("doProcess: start " + dao.getRegion());
         try {
-            statusRepo.importStartedAt(new DateTime());
-            long latestSyncId = haibaDao.getLatestSyncId();
-            Collection<Medicin> medicinFromSyncId = medicinDAO.getMedicinFromSyncId(latestSyncId, batchSize);
+            statusRepo.importStartedAt(new DateTime(), dao.getRegion() + "");
+            long latestSyncId = haibaDao.getLatestSyncId(dao.getRegion());
+            Collection<Medicin> medicinFromSyncId = dao.getMedicinFromSyncId(latestSyncId, batchSize);
             while (!medicinFromSyncId.isEmpty()) {
-                log.debug("doProcess: copying " + medicinFromSyncId.size() + " rows from syncId " + latestSyncId);
+                log.debug("doProcess: copying " + medicinFromSyncId.size() + " rows from syncId " + latestSyncId
+                        + " from region " + dao.getRegion());
                 haibaDao.saveMedicinList(medicinFromSyncId);
-                latestSyncId = haibaDao.getLatestSyncId();
-                medicinFromSyncId = medicinDAO.getMedicinFromSyncId(latestSyncId, batchSize);
+                latestSyncId = haibaDao.getLatestSyncId(dao.getRegion());
+                medicinFromSyncId = dao.getMedicinFromSyncId(latestSyncId, batchSize);
             }
             statusRepo.importEndedWithSuccess(new DateTime());
         } catch (Throwable e) {
             statusRepo.importEndedWithFailure(new DateTime(), e.getMessage());
             throw new RuntimeException("runParserOnInbox  failed", e); // to make sure the transaction rolls back
         }
+        log.info("doProcess: end " + dao.getRegion());
     }
 
     public boolean isManualOverride() {

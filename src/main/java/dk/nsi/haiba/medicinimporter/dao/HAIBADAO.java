@@ -32,7 +32,7 @@ import dk.nsi.haiba.medicinimporter.exception.DAOException;
 import dk.nsi.haiba.medicinimporter.importer.Medicin;
 
 public interface HAIBADAO {
-    public long getLatestSyncId();
+    public long getLatestSyncId(int region);
 
     void saveMedicinList(Collection<Medicin> medicinFromSyncId) throws DAOException;
 

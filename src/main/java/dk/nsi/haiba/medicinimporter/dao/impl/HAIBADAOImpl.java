@@ -47,10 +47,11 @@ public class HAIBADAOImpl extends CommonDAO implements HAIBADAO {
     public HAIBADAOImpl(String dialect) {
         super(dialect);
     }
-    
+
     @Override
-    public long getLatestSyncId() {
-        return haibaJdbcTemplate.queryForLong("SELECT max(insertrow_id) FROM " + haibaTablePrefix + "Data_medicine");
+    public long getLatestSyncId(int region) {
+        return haibaJdbcTemplate.queryForLong("SELECT max(insertrow_id) FROM " + haibaTablePrefix
+                + "Data_medicine WHERE V_REGION = ?", "" + region);
     }
 
     @Override

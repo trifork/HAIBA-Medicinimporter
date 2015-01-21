@@ -60,11 +60,20 @@ public class MedicinConfiguration {
     @Value("${jdbc.medicinJNDIName}")
     private String medicinJNDIName;
     
+    @Value("${jdbc.regionHMedicinJNDIName}")
+    private String regionHMedicinJNDIName;
+    
     @Value("${jdbc.haiba.dialect:MSSQL}")
     String haibadialect;
 
     @Value("${jdbc.medicin.dialect:MSSQL}")
     String medicindialect;
+
+    @Value("${jdbc.medicintableprefix:BASE.T_HAI_MEDICIN}")
+    String medicintable;
+    
+    @Value("${jdbc.regionhmedicintable:BASE.T_MEDICIN_1084}")
+    String regionhmedicintable;
 
     // this is not automatically registered, see https://jira.springsource.org/browse/SPR-8539
     @Bean
@@ -97,6 +106,15 @@ public class MedicinConfiguration {
         factory.afterPropertiesSet();
         return (DataSource) factory.getObject();
     }
+    
+    @Bean
+    public DataSource regionHMedicinDataSource() throws Exception {
+        JndiObjectFactoryBean factory = new JndiObjectFactoryBean();
+        factory.setJndiName(regionHMedicinJNDIName);
+        factory.setExpectedType(DataSource.class);
+        factory.afterPropertiesSet();
+        return (DataSource) factory.getObject();
+    }
 
     @Bean
     public JdbcTemplate haibaJdbcTemplate(@Qualifier("haibaDataSource") DataSource ds) {
@@ -105,6 +123,11 @@ public class MedicinConfiguration {
 
     @Bean
     public JdbcTemplate medicinJdbcTemplate(@Qualifier("medicinDataSource") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
+    
+    @Bean
+    public JdbcTemplate regionHMedicinJdbcTemplate(@Qualifier("regionHMedicinDataSource") DataSource ds) {
         return new JdbcTemplate(ds);
     }
 
@@ -122,12 +145,7 @@ public class MedicinConfiguration {
     public TimeSource timeSource() {
         return new TimeSourceRealTimeImpl();
     }
-
-    @Bean
-    public PlatformTransactionManager medicinTransactionManager(@Qualifier("medicinDataSource") DataSource ds) {
-        return new DataSourceTransactionManager(ds);
-    }
-    
+ 
     @Bean
     public PlatformTransactionManager haibaTransactionManager(@Qualifier("haibaDataSource") DataSource ds) {
         return new DataSourceTransactionManager(ds);
@@ -139,7 +157,12 @@ public class MedicinConfiguration {
     }
 
     @Bean
-    public MedicinDAO medicinDAO() {
-        return new MedicinDAOImpl(medicindialect);
+    public MedicinDAO medicinDAO(@Qualifier("medicinJdbcTemplate") JdbcTemplate jt) {
+        return new MedicinDAOImpl(medicindialect, jt, medicintable, 1085, new MedicinDAOImpl.StandardRowMapper());
+    }
+    
+    @Bean
+    public MedicinDAO regionHMedicinDAO(@Qualifier("regionHMedicinJdbcTemplate") JdbcTemplate jt) {
+        return new MedicinDAOImpl(medicindialect, jt, regionhmedicintable, 1084, new MedicinDAOImpl.RegionHRowMapper());
     }
 }

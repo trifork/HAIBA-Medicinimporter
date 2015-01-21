@@ -63,10 +63,10 @@ public class ImportStatusRepositoryJdbcImpl extends CommonDAO implements ImportS
     
     @Override
     @Transactional(value = "haibaTransactionManager")
-    public void importStartedAt(DateTime startTime) {
+    public void importStartedAt(DateTime startTime, String type) {
         log.debug("Starting import");
-        haibaJdbcTemplate.update("INSERT INTO " + tableprefix + "MedicinImporterStatus (StartTime) values (?)",
-                startTime.toDate());
+        haibaJdbcTemplate.update("INSERT INTO " + tableprefix + "MedicinImporterStatus (StartTime, Type) values (?, ?)",
+                startTime.toDate(), type);
     }
 
     @Override

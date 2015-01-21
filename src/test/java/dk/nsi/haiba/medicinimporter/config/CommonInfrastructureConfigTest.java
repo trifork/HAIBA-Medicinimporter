@@ -44,7 +44,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class CommonInfrastructureConfigTest {
     @Inject
     @Qualifier("haibaDataSource")
-    DataSource datasource;
+    DataSource haibaDataSource;
 
     @Configuration
     @Import({MedicinTestConfiguration.class})
@@ -53,6 +53,6 @@ public class CommonInfrastructureConfigTest {
 
     @Test
     public void canCreateConfiguration() throws Exception {
-        assertNotNull(datasource);
+        assertNotNull(haibaDataSource);
     }
 }

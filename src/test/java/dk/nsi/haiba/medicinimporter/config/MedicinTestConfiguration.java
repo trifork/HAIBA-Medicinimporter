@@ -30,18 +30,21 @@ import static org.mockito.Mockito.mock;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import dk.nsi.haiba.medicinimporter.config.MedicinConfiguration;
+import dk.nsi.haiba.medicinimporter.dao.HAIBADAO;
+import dk.nsi.haiba.medicinimporter.dao.MedicinDAO;
 
 @Configuration
 @EnableTransactionManagement
 @PropertySource("test.properties")
 public class MedicinTestConfiguration extends MedicinConfiguration {
-
     @Bean
     public DataSource haibaDataSource() {
         return mock(DataSource.class);
@@ -50,6 +53,27 @@ public class MedicinTestConfiguration extends MedicinConfiguration {
     @Bean
     public DataSource medicinDataSource() {
         return mock(DataSource.class);
+    }
+    
+    @Bean
+    public DataSource regionHMedicinDataSource() {
+        return mock(DataSource.class);
+    }
+    
+
+    @Bean
+    public HAIBADAO haibaDAO() {
+        return mock(HAIBADAO.class);
+    }
+
+    @Bean
+    public MedicinDAO medicinDAO(@Qualifier("medicinJdbcTemplate") JdbcTemplate jt, @Qualifier("medicintable") String table) {
+        return mock(MedicinDAO.class);
+    }
+    
+    @Bean
+    public MedicinDAO regionHMedicinDAO(@Qualifier("regionHMedicinJdbcTemplate") JdbcTemplate jt, @Qualifier("regionhmedicintable") String table) {
+        return mock(MedicinDAO.class);
     }
 
 }

@@ -32,7 +32,7 @@ import org.joda.time.DateTime;
  * Represents the import status and deadline information for the LPR importer
  */
 public interface ImportStatusRepository {
-	void importStartedAt(DateTime startTime);
+	void importStartedAt(DateTime startTime, String type);
 
 	ImportStatus getLatestStatus();
 	

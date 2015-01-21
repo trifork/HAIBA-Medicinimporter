@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -41,6 +42,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.mysql.jdbc.Driver;
 
 import dk.nsi.haiba.medicinimporter.config.MedicinConfiguration;
+import dk.nsi.haiba.medicinimporter.dao.MedicinDAO;
+import dk.nsi.haiba.medicinimporter.dao.impl.MedicinDAOImpl;
 import dk.nsi.haiba.medicinimporter.importer.ImportExecutor;
 import dk.nsi.haiba.medicinimporter.status.ImportStatusRepository;
 import dk.nsi.haiba.medicinimporter.status.ImportStatusRepositoryJdbcImpl;
@@ -67,6 +70,9 @@ public class MedicinIntegrationTestConfiguration extends MedicinConfiguration {
     private String testHAIBADbPassword;
     @Value("${jdbc.haiba.dialect:MSSQL}")
     String haibadialect;
+    @Value("${jdbc.medicin.dialect:MSSQL}")
+    String medicindialect;
+
     @Bean
     public DataSource haibaDataSource() throws Exception {
         String jdbcUrlPrefix = "jdbc:mysql://127.0.0.1:" + mysqlPort + "/";
@@ -82,24 +88,52 @@ public class MedicinIntegrationTestConfiguration extends MedicinConfiguration {
         return new SimpleDriverDataSource(new Driver(), jdbcUrlPrefix + testHAIBADbName
                 + "?createDatabaseIfNotExist=true", testHAIBADbUsername, testHAIBADbPassword);
     }
-    
+
+    @Bean
+    public DataSource regionHMedicinDataSource() throws Exception {
+        String jdbcUrlPrefix = "jdbc:mysql://127.0.0.1:" + mysqlPort + "/";
+
+        return new SimpleDriverDataSource(new Driver(), jdbcUrlPrefix + testHAIBADbName
+                + "?createDatabaseIfNotExist=true", testHAIBADbUsername, testHAIBADbPassword);
+    }
+
+    @Bean
+    public JdbcTemplate medicinJdbcTemplate(@Qualifier("medicinDataSource") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
+
+    @Bean
+    public JdbcTemplate regionHMedicinJdbcTemplate(@Qualifier("regionHMedicinDataSource") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
+
     @Bean
     public ImportExecutor importExecutor() {
         return new ImportExecutor();
     }
-    
+
     @Bean
     public ImportStatusRepository importStatusRepository() {
         return new ImportStatusRepositoryJdbcImpl(haibadialect);
     }
-    
+
     @Bean
     public TimeSource timeSource() {
         return new TimeSourceRealTimeImpl();
     }
-    
+
     @Bean
     public PlatformTransactionManager medicinTransactionManager(@Qualifier("medicinDataSource") DataSource ds) {
         return new DataSourceTransactionManager(ds);
+    }
+
+    @Bean
+    public MedicinDAO medicinDAO(@Qualifier("medicinJdbcTemplate") JdbcTemplate jt) {
+        return new MedicinDAOImpl(medicindialect, jt, "T_HAI_MEDICIN", 1085, new MedicinDAOImpl.StandardRowMapper());
+    }
+
+    @Bean
+    public MedicinDAO regionHMedicinDAO(@Qualifier("regionHMedicinJdbcTemplate") JdbcTemplate jt) {
+        return new MedicinDAOImpl(medicindialect, jt, "T_MEDICIN_1084", 1084, new MedicinDAOImpl.RegionHRowMapper());
     }
 }
